@@ -50,7 +50,20 @@ jobs:
             --restart unless-stopped \
             --name neplink ghcr.io/${{ github.repository }}:latest 
             docker logs neplink
-
+         
+            
+      - name: Copy nginx configuration , symlink to enable , test and reload host nginx
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          port: 22
+          key: ${{ secrets.KEY }}
+          script: |
+             sudo cp ~/deploy/nginx  /etc/nginx/sites-available/neplink
+             sudo ln -s /etc/nginx/sites-available/neplink  /etc/nginx/sites-enabled/neplink
+             sudo nginx -t
+             sudo systemctl reload nginx
   aftermath:
     needs: deploy
     runs-on: ubuntu-latest
