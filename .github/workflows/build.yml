@@ -1,0 +1,52 @@
+name: Build  and push
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout and clone repo to runner
+        uses: actions/checkout@v4
+
+      - name: Login to github image ghcr
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build app into docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into vm and deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          port: 22
+          key: ${{ secrets.KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository }}:latest 
+            docker stop neplink || true 
+            echo "neplink stopped"
+            docker rm neplink  || true 
+            echo "neplink removed"
+            docker run -d -p 127.0.0.1:3006:3006 \
+            --restart unless-stopped \
+            --name neplink ghcr.io/${{ github.repository }}:latest 
+            docker logs neplink

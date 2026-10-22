@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* "WINDOW SEAT (NEPLINK)" palette — lead-pipeline.pen / NEPLINK frames */
+:root {
+  --cloud: #f7f4ee;
+  --clouddeep: #ede7db;
+  --navy: #14283e;
+  --navydeep: #0d1b2b;
+  --azure: #3d7bc0;
+  --skypale: #c9e3f6;
+  --coral: #e86a4e;
+  --gold: #e4b54b;
+}
+
+@theme inline {
+  --color-cloud: var(--cloud);
+  --color-clouddeep: var(--clouddeep);
+  --color-navy: var(--navy);
+  --color-navydeep: var(--navydeep);
+  --color-azure: var(--azure);
+  --color-skypale: var(--skypale);
+  --color-coral: var(--coral);
+  --color-gold: var(--gold);
+
+  --font-display: var(--font-unbounded), "Unbounded", system-ui, sans-serif;
+  --font-body: var(--font-schibsted), "Schibsted Grotesk", system-ui, sans-serif;
+
+  --ease-out-quart: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--navydeep);
+  color: var(--navy);
+  font-family: var(--font-schibsted), "Schibsted Grotesk", system-ui, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--coral);
+  color: #fff;
+}
+
+/* visible focus for keyboard CTAs (WCAG) */
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* skip link — visually hidden until focused */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  background: var(--coral);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  padding: 12px 20px;
+  border-radius: 999px;
+  transition: top 0.2s var(--ease-out-quart);
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* horizontal rails without the raw scrollbar */
+.no-sb {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-sb::-webkit-scrollbar {
+  display: none;
+}
+
+/* marquee keyframes — 50% shift on a duplicated track = seamless */
+@keyframes neplink-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* reduced motion: kill CSS loops; GSAP paths bail in JS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
