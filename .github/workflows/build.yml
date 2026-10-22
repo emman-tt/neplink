@@ -6,6 +6,8 @@ on:
 
 env:
   APP_NAME: "neplink"
+  HOST_PORT: "3006"
+  CONTAINER_PORT: "3006"
 
 jobs:
   build:
@@ -65,7 +67,7 @@ jobs:
             echo "$APP_NAME stopped"
             docker rm $APP_NAME  || true 
             echo "$APP_NAME removed"
-            docker run -d -p 127.0.0.1:3006:3006 \
+            docker run -d -p 127.0.0.1:$HOST_PORT:$CONTAINER_PORT \
             --restart unless-stopped \
             --name $APP_NAME ghcr.io/${{ github.repository }}:latest 
             docker logs $APP_NAME
