@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  APP_NAME: "$APP_NAME"
+  APP_NAME: "neplink"
 
 jobs:
   build:
@@ -62,7 +62,7 @@ jobs:
           port: 22
           key: ${{ secrets.KEY }}
           script: |
-            sudo cp /home/ubuntu/deploy/nginx  /etc/nginx/sites-available/$APP_NAME
+            sudo cp /home/ubuntu/deploy/nginx.conf  /etc/nginx/sites-available/$APP_NAME
             sudo ln -s /etc/nginx/sites-available/$APP_NAME  /etc/nginx/sites-enabled/$APP_NAME
             sudo nginx -t
             sudo systemctl reload nginx
