@@ -43,6 +43,7 @@ jobs:
           username: ${{ secrets.USER }}
           port: 22
           key: ${{ secrets.KEY }}
+          envs: APP_NAME
           script: |
             docker pull ghcr.io/${{ github.repository }}:latest 
             docker stop $APP_NAME || true 
@@ -61,6 +62,7 @@ jobs:
           username: ${{ secrets.USER }}
           port: 22
           key: ${{ secrets.KEY }}
+          envs: APP_NAME
           script: |
             sudo cp /home/ubuntu/deploy/nginx.conf  /etc/nginx/sites-available/$APP_NAME
             sudo ln -s /etc/nginx/sites-available/$APP_NAME  /etc/nginx/sites-enabled/$APP_NAME
