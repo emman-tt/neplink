@@ -50,3 +50,15 @@ jobs:
             --restart unless-stopped \
             --name neplink ghcr.io/${{ github.repository }}:latest 
             docker logs neplink
+
+  aftermath:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update repo description
+        env:
+          GH_TOKEN: ${{secrets.GH_PAT}}
+        run: |
+         gh repo edit --description "neplink.emmanverse.uk"
+
+      

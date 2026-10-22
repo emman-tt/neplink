@@ -32,7 +32,7 @@ function Porthole({
             reduced-motion visitors. */}
         <div ref={portalRef} className="absolute inset-0 z-0 overflow-hidden rounded-full">
           <Image
-          loading="eager"
+            loading="eager"
             src={PORTAL.img as string}
             alt={PORTAL.alt}
             fill
@@ -106,7 +106,7 @@ export default function Hero() {
       if (portalVideo) portalVideo.loop = false;
       portalVideo?.pause();
     } else {
-      portalVideo?.play().catch(() => {});
+      portalVideo?.play().catch(() => { });
     }
 
     const ctx = gsap.context(() => {
