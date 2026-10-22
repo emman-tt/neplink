@@ -58,8 +58,8 @@ jobs:
       - name: Update repo description
         env:
           GH_TOKEN: ${{secrets.GH_PAT}}
-          GH_REPO: ${{github.repository}}
+    
         run: |
-          gh repo edit "${{ github.repository }}" --description "neplink.emmanverse.uk"
+          gh repo edit "${{ github.repository }}" --description "https://neplink.emmanverse.uk"
 
       
