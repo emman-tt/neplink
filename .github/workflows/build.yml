@@ -1,4 +1,4 @@
-name: Build  and push
+name: Build and push
 
 on:
   push:
@@ -32,10 +32,23 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+   
+      - name: Copy Nginx Config to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          port: 22
+          key: ${{ secrets.KEY }}
+          source: "nginx.conf" 
+          target: "/home/ubuntu/deploy/"
+
+   
       - name: SSH into vm and deploy
         uses: appleboy/ssh-action@v1
         with:
@@ -55,7 +68,8 @@ jobs:
             --name $APP_NAME ghcr.io/${{ github.repository }}:latest 
             docker logs $APP_NAME
 
-      - name: Copy nginx configuration , symlink to enable , test and reload host nginx
+     
+      - name: Copy nginx configuration, symlink to enable, test and reload host nginx
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
@@ -64,17 +78,19 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: APP_NAME
           script: |
-            sudo cp /home/ubuntu/deploy/nginx.conf  /etc/nginx/sites-available/$APP_NAME
-            sudo ln -s /etc/nginx/sites-available/$APP_NAME  /etc/nginx/sites-enabled/$APP_NAME
+            # Note: Using -sf to force overwrite the symlink
+            sudo cp /home/ubuntu/deploy/nginx.conf /etc/nginx/sites-available/$APP_NAME
+            sudo ln -sf /etc/nginx/sites-available/$APP_NAME /etc/nginx/sites-enabled/$APP_NAME
             sudo nginx -t
             sudo systemctl reload nginx
+
   aftermath:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Update repo description
         env:
-          GH_TOKEN: ${{secrets.GH_PAT}}
-
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          APP_NAME: ${{ env.APP_NAME }} 
         run: |
           gh repo edit "${{ github.repository }}" --description "https://$APP_NAME.emmanverse.uk"
