@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+env:
+  APP_NAME: "$APP_NAME"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,16 +45,15 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             docker pull ghcr.io/${{ github.repository }}:latest 
-            docker stop neplink || true 
-            echo "neplink stopped"
-            docker rm neplink  || true 
-            echo "neplink removed"
+            docker stop $APP_NAME || true 
+            echo "$APP_NAME stopped"
+            docker rm $APP_NAME  || true 
+            echo "$APP_NAME removed"
             docker run -d -p 127.0.0.1:3006:3006 \
             --restart unless-stopped \
-            --name neplink ghcr.io/${{ github.repository }}:latest 
-            docker logs neplink
-         
-            
+            --name $APP_NAME ghcr.io/${{ github.repository }}:latest 
+            docker logs $APP_NAME
+
       - name: Copy nginx configuration , symlink to enable , test and reload host nginx
         uses: appleboy/ssh-action@v1
         with:
@@ -60,10 +62,10 @@ jobs:
           port: 22
           key: ${{ secrets.KEY }}
           script: |
-             sudo cp ~/deploy/nginx  /etc/nginx/sites-available/neplink
-             sudo ln -s /etc/nginx/sites-available/neplink  /etc/nginx/sites-enabled/neplink
-             sudo nginx -t
-             sudo systemctl reload nginx
+            sudo cp /home/ubuntu/deploy/nginx  /etc/nginx/sites-available/$APP_NAME
+            sudo ln -s /etc/nginx/sites-available/$APP_NAME  /etc/nginx/sites-enabled/$APP_NAME
+            sudo nginx -t
+            sudo systemctl reload nginx
   aftermath:
     needs: deploy
     runs-on: ubuntu-latest
@@ -71,8 +73,6 @@ jobs:
       - name: Update repo description
         env:
           GH_TOKEN: ${{secrets.GH_PAT}}
-    
-        run: |
-          gh repo edit "${{ github.repository }}" --description "https://neplink.emmanverse.uk"
 
-      
+        run: |
+          gh repo edit "${{ github.repository }}" --description "https://$APP_NAME.emmanverse.uk"
