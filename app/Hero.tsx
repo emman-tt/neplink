@@ -32,6 +32,7 @@ function Porthole({
             reduced-motion visitors. */}
         <div ref={portalRef} className="absolute inset-0 z-0 overflow-hidden rounded-full">
           <Image
+          loading="eager"
             src={PORTAL.img as string}
             alt={PORTAL.alt}
             fill
@@ -39,7 +40,7 @@ function Porthole({
             className="scale-[1.04] object-cover"
           />
           <video
-            src="/hero-window.mp4"
+            src="https://media.emmanverse.uk/12449638_3840_2160_120fps.mp4"
             className="absolute inset-0 z-[1] h-full w-full scale-[1.04] object-cover"
             autoPlay
             muted
